@@ -97,8 +97,7 @@ function showNotification(message) {
 showQuoteButton.addEventListener("click", showRandomQuote);
 createAddQuoteForm();
 
-const exportButton = document.createElement('button');
-exportButton.textContent = 'Export Quotes';
+const exportButton = document.getElementById("exportQuotes");
 exportButton.onclick = exportToJsonFile;
 document.body.appendChild(exportButton);
 
