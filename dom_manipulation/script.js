@@ -2,7 +2,7 @@ const quoteDisplay = document.getElementById("quoteDisplay");
 const showQuoteButton = document.getElementById("newQuote");
 
 
-const quotes = [
+let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     { text: "The best way to predict the future is to invent it.", category: "Inspiration" },
     { text: "Life is 10% what happens to us and 90% how we react to it.", category: "Motivation" }
 ]
@@ -29,9 +29,7 @@ function createAddQuoteForm() {
 
 function addQuote() {
     const quote = document.getElementById("newQuoteText").value.trim();
-    console.log(quote)
     const category = document.getElementById("newQuoteCategory").value.trim();
-    console.log(category)
 
     if (quote && category) {
         const quoteObject = {
@@ -46,5 +44,43 @@ function addQuote() {
     }
 }
 
+
+function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes))
+}
+
+function exportToJsonFile() {
+    const dataString = JSON.stringify(quotes);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataString);
+    const exportFileDefaultName = 'quotes.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+        const importedQuotes = JSON.parse(event.target.result);
+        quotes.push(...importedQuotes);
+        saveQuotes();
+        alert('Quotes imported successfully!');
+    };
+    fileReader.readAsText(event.target.files[0]);
+}
+
 showQuoteButton.addEventListener("click", showRandomnQuotes);
 createAddQuoteForm();
+
+const exportButton = document.createElement('button');
+exportButton.textContent = 'Export Quotes';
+exportButton.onclick = exportToJsonFile;
+document.body.appendChild(exportButton);
+
+const importInput = document.createElement('input');
+importInput.type = 'file';
+importInput.id = 'importFile';
+importInput.accept = '.json';
+importInput.onchange = importFromJsonFile;
+document.body.appendChild(importInput);
