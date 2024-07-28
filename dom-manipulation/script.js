@@ -7,6 +7,34 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     { text: "Life is 10% what happens to us and 90% how we react to it.", category: "Motivation" }
 ]
 
+function populateCategories() {
+    const categories = [...new Set(quotes.map(quote => quote.category))];
+    const categoryFilter = document.getElementById('categoryFilter');
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.innerText = category;
+        categoryFilter.appendChild(option);
+    });
+
+    const lastSelectedFilter = localStorage.getItem('selectedCategory') || 'all';
+    categoryFilter.value = lastSelectedFilter;
+    filterQuotes();
+}
+
+function filterQuotes() {
+    const selectedCategory = document.getElementById('categoryFilter').value;
+    localStorage.setItem('lastSelectedCategory', selectedCategory);
+    const filteredQuotes = selectedCategory === 'all' ? quotes : quotes.filter(quote => quote.category === selectedCategory);
+    const quoteDisplay = document.getElementById('quoteDisplay');
+    if (filteredQuotes.length > 0) {
+        const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+        const quote = filteredQuotes[randomIndex];
+        quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>${quote.category}</em></p>`;
+    } else {
+        quoteDisplay.innerHTML = '<p>No quotes available for this category.</p>';
+    }
+}
 
 function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -61,7 +89,7 @@ function exportToJsonFile() {
 
 function importFromJsonFile(event) {
     const fileReader = new FileReader();
-    fileReader.onload = function(event) {
+    fileReader.onload = function (event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         saveQuotes();
@@ -112,3 +140,4 @@ document.body.appendChild(importInput);
 
 
 startPeriodicSync();
+populateCategories()
