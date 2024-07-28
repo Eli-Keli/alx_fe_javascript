@@ -14,7 +14,6 @@ function showRandomnQuotes() {
     quoteDisplay.textContent = randomQuote.text;
 }
 
-
 function createAddQuoteForm() {
     const quoteForm = document.createElement("div");
     quoteForm.innerHTML = `
@@ -24,8 +23,6 @@ function createAddQuoteForm() {
     `
     document.body.appendChild(quoteForm);
 }
-
-
 
 function addQuote() {
     const quote = document.getElementById("newQuoteText").value.trim();
@@ -46,7 +43,8 @@ function addQuote() {
 
 
 function saveQuotes() {
-    localStorage.setItem("quotes", JSON.stringify(quotes))
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+    syncWithServer();
 }
 
 function exportToJsonFile() {
@@ -70,6 +68,32 @@ function importFromJsonFile(event) {
     fileReader.readAsText(event.target.files[0]);
 }
 
+async function syncWithServer() {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const serverQuotes = await response.json();
+        quotes = serverQuotes;
+        saveQuotes();
+        showNotification('Quotes synced with server');
+    } catch (error) {
+        console.error('Error syncing with server:', error);
+    }
+}
+
+function startPeriodicSync() {
+    setInterval(syncWithServer, 60000);
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'notification';
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
 showQuoteButton.addEventListener("click", showRandomnQuotes);
 createAddQuoteForm();
 
@@ -84,3 +108,6 @@ importInput.id = 'importFile';
 importInput.accept = '.json';
 importInput.onchange = importFromJsonFile;
 document.body.appendChild(importInput);
+
+
+startPeriodicSync();
