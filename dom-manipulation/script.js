@@ -8,7 +8,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
 ]
 
 
-function showRandomnQuotes() {
+function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
     quoteDisplay.textContent = randomQuote.text;
@@ -94,7 +94,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-showQuoteButton.addEventListener("click", showRandomnQuotes);
+showQuoteButton.addEventListener("click", showRandomQuote);
 createAddQuoteForm();
 
 const exportButton = document.createElement('button');
