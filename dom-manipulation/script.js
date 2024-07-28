@@ -110,17 +110,63 @@ async function fetchQuotesFromServer() {
     }
 }
 
+async function postQuotesToServer(params) {
+    try {
+        await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quotes)
+        });
+        console.log('Data successfully posted to server');
+    } catch (error) {
+        console.error('Error posting to server:', error);
+    }
+}
+
+async function syncQuotes(params) {
+    try {
+        const serverQuotes = await fetchQuotesFromServer();
+
+        if (serverQuotes.length > 0) {
+            quotes = serverQuotes;
+            saveQuotes();
+            populateCategories();
+            showNotification('Quotes synced with server!');
+        }
+
+        await postQuotesToServer();
+    } catch (error) {
+        console.error('Error syncing quotes:', error);
+        showNotification('Error syncing quotes. Please try again.');
+    }
+}
+
 function startPeriodicSync() {
     setInterval(fetchQuotesFromServer, 60000);
 }
 
 function showNotification(message) {
     const notification = document.createElement('div');
-    notification.textContent = message;
     notification.className = 'notification';
+    notification.textContent = message;
+
+    // Style the notification
+    notification.style.position = 'fixed';
+    notification.style.bottom = '10px';
+    notification.style.right = '10px';
+    notification.style.backgroundColor = '#333';
+    notification.style.color = '#fff';
+    notification.style.padding = '10px';
+    notification.style.borderRadius = '5px';
+    notification.style.zIndex = '1000';
+
     document.body.appendChild(notification);
+
+    // Remove notification after 3 seconds
     setTimeout(() => {
-        notification.remove();
+        document.body.removeChild(notification);
     }, 3000);
 }
 
