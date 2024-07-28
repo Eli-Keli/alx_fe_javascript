@@ -49,12 +49,14 @@ function saveQuotes() {
 
 function exportToJsonFile() {
     const dataString = JSON.stringify(quotes);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataString);
-    const exportFileDefaultName = 'quotes.json';
+    const dataBlob = new Blob([dataString], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
     const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.setAttribute('href', url);
+    linkElement.setAttribute('download', 'quotes.json');
+    document.body.appendChild(linkElement);
     linkElement.click();
+    document.body.removeChild(linkElement);
 }
 
 function importFromJsonFile(event) {
