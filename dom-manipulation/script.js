@@ -72,7 +72,7 @@ function addQuote() {
 
 function saveQuotes() {
     localStorage.setItem("quotes", JSON.stringify(quotes));
-    syncWithServer();
+    fetchQuotesFromServer();
 }
 
 function exportToJsonFile() {
@@ -98,7 +98,7 @@ function importFromJsonFile(event) {
     fileReader.readAsText(event.target.files[0]);
 }
 
-async function syncWithServer() {
+async function fetchQuotesFromServer() {
     try {
         const response = await fetch('https://jsonplaceholder.typicode.com/posts');
         const serverQuotes = await response.json();
@@ -111,7 +111,7 @@ async function syncWithServer() {
 }
 
 function startPeriodicSync() {
-    setInterval(syncWithServer, 60000);
+    setInterval(fetchQuotesFromServer, 60000);
 }
 
 function showNotification(message) {
